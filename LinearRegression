@@ -1,0 +1,80 @@
+'''
+Linear regression with python
+Usage : filling missing values of excel for a special person
+Dependencies : xlrd / numpy / pandas / sklearn
+'''
+import xlrd
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+# 0. 参数
+excel_path = '...'
+sheet_name = '...'
+field_name = '...'
+save_path = '...'
+years = [2012,2013,2014,2015]
+year = 2012 #假设2012年数据缺失
+
+# 1. 读取excel中的数据,下面提供两种方式, 返回一个list：
+
+## 1.1 根据sheet编号读取Excel中的数据
+def tolistByNo(path, sheet_no):
+    data = xlrd.open_workbook(path)
+    table = data.sheets()[sheet_no]
+    nrows = table.nrows
+    list_rows=[]
+    for row in range(0, nrows):
+        row_values = table.row_values(row)
+        list_rows.append(row_values)
+    return list_rows
+
+## 1.2 根据sheet名称读取Excel中的数据
+def tolistByName(path, sheet_name):
+    data = xlrd.open_workbook(path)
+    table = data.sheet_by_name(sheet_name)
+    nrows = table.nrows
+    list_rows = []
+    for row in range(0, nrows):
+        row_values = table.row_values(row)
+        list_rows.append(row_values)
+    return list_rows
+
+# 2. 根据数据读入的数据结构构造一个DataFrame的数据结构，R语言中应该也有类似的数据结构用于数据清洗
+data_map = {}
+for y in years:
+    raw_data = tolistByName(excel_path, sheet_name)
+    data_frame = pd.DataFrame(raw_data[1:], columns=raw_data[0])
+    data_map[y] = data_frame
+
+# 3. 获取一个训练集（Features, Label）和预测集（Features），训练结果并存入df
+y_train = list(data_map[year][data_map[year][field_name]>=0][field_name].tolist())
+x_train = []
+x_test = []
+
+for y in years:
+    if y != year:
+        temp_train = data_map[y][data_map[y][field_name]>=0][field_name].tolist()
+        temp_test = data_map[y][data_map[y][field_name]<0][field_name].tolist()
+        x_train.append(temp_train)
+        x_test.append(temp_test)
+
+x_trian = np.matrix(x_train)
+x_train = np.transpose(x_train)
+
+x_test = np.matrix(x_test)
+x_test = np.transpose(x_test)
+
+model = LinearRegression()
+model.fit(x_train, y_train)
+
+predictions = model.predict(x_test)
+predictions[predictions<0] = 0
+b = [int(i) for i in predictions]
+data_map[year][data_map[year][field_name] < 0] = b
+
+# 4. 保存结果
+writer = pd.ExcelWriter(save_path, engine='openpyxl')
+data_map[year].to_excel(writer, sheet_name, index=False)
+writer.save()

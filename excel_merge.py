@@ -26,7 +26,7 @@ def excelYearBuffer(year, buffer):
     index = []
     absent = []
     for fid in range(2280):
-        fileName = "/Users/yanmeng/Downloads/lightdata/"+str(year)+"buffer"+str(buffer)+"/y"+str(year)+"_d"+str(buffer)+"_fid"+str(fid)+"_table.dbf"
+        fileName = "/Users/yanmeng/Downloads/lightdata/yanmenglight/"+str(year)+"buffer"+str(buffer)+"/y"+str(year)+"_d"+str(buffer)+"_fid"+str(fid)+"_table.dbf"
         isExist = os.path.isfile(fileName)
         if isExist:
             table = DBF(fileName, 'latin1')
@@ -45,6 +45,8 @@ def excelYearBuffer(year, buffer):
                 index.append(fid)
                 list_2d.append([fid, sum])
         else:
+            index.append(fid)
+            list_2d.append([fid, -1])
             absent.append(fid)
 
     value = "ntl"+str(year)+"d"+str(buffer)
@@ -57,14 +59,14 @@ def excelYearBuffer(year, buffer):
 
 def main():
     for y in years:
-        writer = pd.ExcelWriter("/Users/yanmeng/Downloads/lightdata/TBData20180104"+str(y)+".xlsx", engine='openpyxl')
+        writer = pd.ExcelWriter("/Users/yanmeng/Downloads/lightdata/yanmenglight/TBData20180104"+str(y)+".xlsx", engine='openpyxl')
         for b in buffers:
             df1 = excelYearBuffer(y,b)
             df1.to_excel(writer,sheet_name=str(b), index=False)
         writer.save()
 
-years = [2013]
-buffers = [1]
+years = [2015]
+buffers = [3]
 main()
 
 # def getDataFrame2
@@ -90,15 +92,11 @@ main()
 # writer.save()
 
 '''''''''
-
-
 # print(df)
 sum_values = []
 for value in range(2280, 0, -1):
     sum_values.append(value)
-
 name = "ntl2012d5"
 df2 = pd.DataFrame(sum_values, index=index, columns=[name])
 print(df2)
-
 '''''
