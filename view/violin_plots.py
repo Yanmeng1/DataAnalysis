@@ -46,3 +46,5 @@ pal = sns.cubehelix_palette(p, rot=-.2, dark=.7)
 
 # Show each distribution with both violins and points
 sns.violinplot(data=d, palette=pal, inner="points")
+
+f, axarr = plt.subplots(3, 3, sharex='col', sharey='row')
