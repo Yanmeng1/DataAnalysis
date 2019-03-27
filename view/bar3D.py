@@ -37,3 +37,10 @@ plt.show()
 from matplotlib import cm
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 ListedColormap()
+
+
+y_ticks=ax1.set_yticks([-80,-60,-40,-20,0])
+y_labels=ax1.set_yticklabels(["one","two","three","four","five"])
+
+import math
+math.floor( x )
