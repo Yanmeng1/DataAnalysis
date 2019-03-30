@@ -63,35 +63,134 @@ def setTicks(ax):
 #     ax.set(xlabel=xyLabel[0], ylabel=xyLabel[1])
 
 
-muList = [0.3, 0.5, 0.7]
-muStyle = ['r^--','g+-','bo:']
-se = [0.4, 0.8]
-le = [0.4, 0.8]
-ra = [3, 9]
+def displayMu():
+    muList = [0.3, 0.5, 0.7]
+    muStyle = ['r^--','g+-','bo:']
+    se = [0.4, 0.8]
+    le = [0.4, 0.8]
+    ra = [3, 9]
+    plt.close('all')
+    fig, axArray = plt.subplots(2, 4, figsize=[14, 6], sharex=True, sharey=True)
+    fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=0.35)
+    axList = axArray.flat
+    axNo = [chr(i) for i in range(97, 97+len(axList), 1)]
+    axNum = 0
+    for s in se:
+        for l in le:
+            for r in ra:
+                ax = axList[axNum]
+                no = axNo[axNum]
+                axNum += 1
+                condition = (simCountry['sense'] == s) & (simCountry['learn'] == l) & (simCountry['radius'] == r)
+                data = simCountry[condition]
+                showLine(ax, data, paraName='mu', paraLabel=r'$\mu=$', paraList=muList, style=muStyle)
+                titleNum = '( ' + no + ' )\n'
+                ax.set_title(titleNum + r'$\alpha$=' + str(s) + r', $\beta$=' + str(l) + r', $\gamma$=' + str(r))
+                setTicks(ax)
+    axArray[0, 0].legend(loc='best')
+    # Hide x labels and tick labels for top plots and y ticks for right plots.
+    for ax in axArray.flat:
+        ax.label_outer()
+    plt.show()
 
-plt.close('all')
-fig, axArray = plt.subplots(2, 4, figsize=[14, 6], sharex=True, sharey=True)
-fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=0.3)
-axList = axArray.flat
-axNum = 0
-for s in se:
+
+def disPlayAlpha():
+    senseList = [0.2, 0.4, 0.6, 0.8]
+    senseStyle = ['r^:', 'g+-', 'ms-.', 'bo--']
+    le = [0.4, 0.8]
+    ra = [3, 9]
+    accuracy = 0.01
+    plt.close('all')
+    fig, axesArray = plt.subplots(2, 2, figsize=[9.8, 7], sharex=True, sharey=True)
+    fig.subplots_adjust(hspace=0.37)
+
+    axesList = axesArray.flat
+    axesNum = 0
+    axNo = [chr(i) for i in range(97, 97 + len(axesList), 1)]
     for l in le:
         for r in ra:
-            ax = axList[axNum]
-            axNum += 1
-
-            condition = (simCountry['sense'] == s) & (simCountry['learn'] == l) & (simCountry['radius'] == r)
+            ax = axesList[axesNum]
+            no = axNo[axesNum]
+            axesNum += 1
+            condition = (abs(simCountry['learn'] - l) < accuracy) & \
+                        (abs(simCountry['radius'] - r) < accuracy) & \
+                        (abs(simCountry['mu'] - 0.5) < accuracy)
             data = simCountry[condition]
+            showLine(ax, data, paraName='sense', paraLabel=r'$\alpha=$', paraList=senseList, style=senseStyle)
+            titleNum = '( ' + no + ' )\n'
+            ax.set_title(titleNum + r'$\beta$=' + str(l) + r', $\gamma$=' + str(r))
 
-            showLine(ax, data, paraName='mu', paraLabel=r'$\mu=$', paraList=muList, style=muStyle)
-            ax.set_title(r'$\alpha$=' + str(s) + r', $\beta$=' + str(l) + r', $\gamma$=' + str(r))
+    axesArray[0, 0].legend(loc='best')
+    # Hide x labels and tick labels for top plots and y ticks for right plots.
+    for ax in axesArray.flat:
+        ax.label_outer()
+    plt.show()
 
-axArray[0, 0].legend(loc='best')
-for ax in axArray.flat:
-    setTicks(ax)
 
-# Hide x labels and tick labels for top plots and y ticks for right plots.
-for ax in axArray.flat:
-    ax.label_outer()
+def disPlayBeta():
+    learnList = [0.2, 0.4, 0.6, 0.8]
+    learnStyle = ['r^:', 'g+-', 'ms-.', 'bo--']
+    se = [0.4, 0.8]
+    ra = [3, 9]
+    accuracy = 0.01
+    plt.close('all')
+    fig, axesArray = plt.subplots(2, 2, figsize=[9.8, 7], sharex=True, sharey=True)
+    fig.subplots_adjust(hspace=0.37)
 
-plt.show()
+    axesList = axesArray.flat
+    axesNum = 0
+    axNo = [chr(i) for i in range(97, 97 + len(axesList), 1)]
+    for s in se:
+        for r in ra:
+            ax = axesList[axesNum]
+            no = axNo[axesNum]
+            axesNum += 1
+            condition = (abs(simCountry['sense'] - s) < accuracy) & \
+                        (abs(simCountry['radius'] - r) < accuracy) & \
+                        (abs(simCountry['mu'] - 0.5) < accuracy)
+            data = simCountry[condition]
+            showLine(ax, data, paraName='learn', paraLabel=r'$\beta=$', paraList=learnList, style=learnStyle)
+            titleNum = '( ' + no + ' )\n'
+            ax.set_title(titleNum + r'$\alpha$=' + str(s) + r', $\gamma$=' + str(r))
+
+    axesArray[0, 0].legend(loc='best')
+    # Hide x labels and tick labels for top plots and y ticks for right plots.
+    for ax in axesArray.flat:
+        ax.label_outer()
+    plt.show()
+
+
+def disPlayGamma():
+    radiusList = [3,7,11]
+    radiusStyle = ['r^:', 'g+-', 'bo--']
+    se = [0.4, 0.8]
+    le = [0.4, 0.8]
+    accuracy = 0.01
+    plt.close('all')
+    fig, axesArray = plt.subplots(2, 2, figsize=[9.8, 7], sharex=True, sharey=True)
+    fig.subplots_adjust(hspace=0.37)
+
+    axesList = axesArray.flat
+    axesNum = 0
+    axNo = [chr(i) for i in range(97, 97 + len(axesList), 1)]
+    for s in se:
+        for l in le:
+            ax = axesList[axesNum]
+            no = axNo[axesNum]
+            axesNum += 1
+            condition = (abs(simCountry['sense'] - s) < accuracy) & \
+                        (abs(simCountry['learn'] - l) < accuracy) & \
+                        (abs(simCountry['mu'] - 0.5) < accuracy)
+            data = simCountry[condition]
+            showLine(ax, data, paraName='radius', paraLabel=r'$\gamma=$', paraList=radiusList, style=radiusStyle)
+            titleNum = '( ' + no + ' )\n'
+            ax.set_title(titleNum + r'$\alpha$='+ str(s) + r', $\beta$=' + str(l))
+
+    axesArray[0, 0].legend(loc='best')
+    # Hide x labels and tick labels for top plots and y ticks for right plots.
+    for ax in axesArray.flat:
+        ax.label_outer()
+    plt.show()
+
+if __name__ == '__main__':
+    disPlayGamma()
