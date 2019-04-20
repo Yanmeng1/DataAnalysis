@@ -69,5 +69,5 @@ axesArray[0].set_title('( a )\n'+r'迟钝型$(\alpha=0.8)$')
 senseAgent = (abs(simCountry['sense'] - 0.4) < accuracy) & (abs(simCountry['mu'] - 0.5) < accuracy) & \
             (abs(simCountry['learn'] - 0.8) < accuracy) & (abs(simCountry['radius'] - 7) < accuracy)
 showIrrigation(axesArray[1], simCountry[senseAgent])
-axesArray[1].set_title('( a )\n' + r'敏感型$(\alpha=0.4)$')
+axesArray[1].set_title('( b )\n' + r'敏感型$(\alpha=0.4)$')
 plt.show()
